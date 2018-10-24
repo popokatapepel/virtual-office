@@ -1,83 +1,33 @@
-from flask import Flask, redirect, url_for, session
-from flask_oauth import OAuth
+from flask import Flask, redirect, url_for
+from flask_dance.contrib.google import make_google_blueprint, google
+import os
 
-# You must configure these 3 values from Google APIs console
-# https://code.google.com/apis/console
+
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+
 GOOGLE_CLIENT_ID = '813328546679-6pjo7e8bbulkevrfjpjoj1pka9vgrh79.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '5YK2VbZbAchrnbUI0r3NuGPU'
-REDIRECT_URI = '/oauth2callback'  # one of the Redirect URIs from Google APIs console
-
-SECRET_KEY = 'development key'
-DEBUG = True
 
 app = Flask(__name__)
-app.debug = DEBUG
-app.secret_key = SECRET_KEY
-oauth = OAuth()
+app.secret_key = "supersekrit"
+blueprint = make_google_blueprint(
+    client_id=GOOGLE_CLIENT_ID,
+    client_secret=GOOGLE_CLIENT_SECRET,
+    scope=[
+        "https://www.googleapis.com/auth/plus.me",
+        "https://www.googleapis.com/auth/userinfo.email",
+    ]
+)
+app.register_blueprint(blueprint, url_prefix="/login")
 
-google = oauth.remote_app('google',
-                          base_url='https://www.google.com/accounts/',
-                          authorize_url='https://accounts.google.com/o/oauth2/auth',
-                          request_token_url=None,
-                          request_token_params={'scope': 'https://www.googleapis.com/auth/userinfo.email',
-                                                'response_type': 'code'},
-                          access_token_url='https://accounts.google.com/o/oauth2/token',
-                          access_token_method='POST',
-                          access_token_params={'grant_type': 'authorization_code'},
-                          consumer_key=GOOGLE_CLIENT_ID,
-                          consumer_secret=GOOGLE_CLIENT_SECRET)
-
-
-@app.route('/')
+@app.route("/")
 def index():
-    access_token = session.get('access_token')
-    if access_token is None:
-        return redirect(url_for('login'))
+    if not google.authorized:
+        return redirect(url_for("google.login"))
+    resp = google.get("/oauth2/v2/userinfo")
+    assert resp.ok, resp.text
+    return "You are {email} on Google".format(email=resp.json()["email"])
 
-    access_token = access_token[0]
-
-    print(access_token)
-
-    from urllib.request import Request, urlopen
-    from urllib.error import URLError, HTTPError
-
-    headers = {'Authorization': 'OAuth ' + access_token}
-    req = Request('https://www.googleapis.com/oauth2/v1/userinfo',
-                  None, headers)
-    try:
-        res = urlopen(req)
-    except HTTPError as e:
-        if e.code == 401:
-            # Unauthorized - bad token
-            session.pop('access_token', None)
-            return redirect(url_for('login'))
-        return res.read()
-
-    return res.read()
-
-
-@app.route('/login')
-def login():
-    callback = url_for('authorized', _external=True)
-    return google.authorize(callback=callback)
-
-
-@app.route(REDIRECT_URI)
-@google.authorized_handler
-def authorized(resp):
-    access_token = resp['access_token']
-    session['access_token'] = access_token, ''
-    return redirect(url_for('index'))
-
-
-@google.tokengetter
-def get_access_token():
-    return session.get('access_token')
-
-
-def main():
+if __name__ == "__main__":
     app.run()
-
-
-if __name__ == '__main__':
-    main()
