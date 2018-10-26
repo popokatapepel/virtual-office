@@ -1,10 +1,13 @@
-from flask import Flask, redirect, url_for
-from flask_dance.contrib.google import make_google_blueprint, google
+import logging
 import os
 
+from flask import Flask, redirect, url_for, jsonify, request
+from flask_dance.contrib.google import make_google_blueprint, google
+from json import dumps
+
+logging.basicConfig(level=logging.DEBUG)
 
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-
 
 GOOGLE_CLIENT_ID = '813328546679-6pjo7e8bbulkevrfjpjoj1pka9vgrh79.apps.googleusercontent.com'
 GOOGLE_CLIENT_SECRET = '5YK2VbZbAchrnbUI0r3NuGPU'
@@ -17,17 +20,48 @@ blueprint = make_google_blueprint(
     scope=[
         "https://www.googleapis.com/auth/plus.me",
         "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/drive"
     ]
 )
 app.register_blueprint(blueprint, url_prefix="/login")
 
+
 @app.route("/")
 def index():
+    print(request.headers.get('User-Agent'))
     if not google.authorized:
         return redirect(url_for("google.login"))
-    resp = google.get("/oauth2/v2/userinfo")
-    assert resp.ok, resp.text
-    return "You are {email} on Google".format(email=resp.json()["email"])
+    userinfo = google.get("/oauth2/v2/userinfo")
+    assert userinfo.ok, userinfo.text
+    drive = google.get("/drive/v3/about?fields=maxUploadSize")
+    assert drive.ok, drive.text
+    drive1 = google.get("/drive/v3/files")
+    return jsonify(drive.json())
+    # return "You are {email} on Google".format(email=userinfo.json()["email"])
+
+
+@app.route('/upload')
+def upload():
+    fname = 'filetoupload.jpeg'
+    with open(fname, 'rb') as f:
+        contents = f.read()
+
+    upload_response = google.post('/upload/drive/v3/files', headers=dict(uploadType='media'), data=contents)
+
+    assert upload_response.ok, upload_response.text
+
+    print(upload_response.json())
+
+    update_uri = 'https://www.googleapis.com/drive/v3/files/' + upload_response.json()['id']
+    headers = {'content-type': 'application/json'}
+    payload = {"name": fname}
+
+    update_resp = google.patch(update_uri, data=dumps(payload), headers=headers)
+
+    assert update_resp.ok, update_resp.text
+
+    return jsonify(update_resp.json())
+
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
