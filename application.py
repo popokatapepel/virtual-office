@@ -1,7 +1,8 @@
 import logging
 import os
 
-from flask import Flask, redirect, url_for, jsonify, request
+from random import randint
+from flask import Flask, redirect, url_for, jsonify, request, session
 from flask_dance.contrib.google import make_google_blueprint, google
 from json import dumps
 
@@ -51,6 +52,7 @@ def upload():
     assert upload_response.ok, upload_response.text
 
     print(upload_response.json())
+    session['fid']=upload_response.json()['id']
 
     update_uri = 'https://www.googleapis.com/drive/v3/files/' + upload_response.json()['id']
     headers = {'content-type': 'application/json'}
@@ -62,6 +64,26 @@ def upload():
 
     return jsonify(update_resp.json())
 
+
+@app.route('/download')
+def download():
+    """
+    this method downloads the same file as uploaded
+    :return:
+    """
+
+    update_uri = '/drive/v3/files/' + session['fid'] + '?alt=media'
+
+    down_resp = google.get(update_uri)
+
+    assert down_resp.ok, down_resp.text
+
+    fname = str(randint(1000, 9999)) + '.jpg'
+    with open(fname, 'wb') as f:
+        f.write(down_resp.content)
+
+
+    return down_resp.text
 
 if __name__ == "__main__":
     app.run(debug=True)
