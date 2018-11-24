@@ -13,11 +13,14 @@ app.config['UPLOAD_FOLDER']='vault'
 @app.route("/", methods=['GET','POST'])
 def index():
     if request.method=='GET':
-        return render_template('photo.html')
+        return render_template('index.html')
     elif request.method=='POST':
-        file=request.files['image']
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
+        #file=request.files['image']
+        #file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
         return 'this is a post request'
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', threaded=True)
