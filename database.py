@@ -28,5 +28,10 @@ class Database():
                      done=td.done,
                      text=td.text)
                 for td in self.todos]
+    def changeTodo(self, id:int, done:bool) -> None:
+        for td in self.todos:
+            if td.id==id:
+                td.done=done
+                break
     def getDocs(self):
         return self.docs

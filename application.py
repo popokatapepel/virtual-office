@@ -23,11 +23,17 @@ def index():
 
 @app.route("/todoList", methods=['GET','POST'])
 def todoList():
-    return render_template('todos.html',todos=app.database.getTodos())
+    if request.method=='GET':
+        return render_template('todos.html',todos=app.database.getTodos())
+    elif request.method == 'POST':
+        id=int(request.form['todoid'])
+        done=True if request.form['done']=='true' else False
+        app.database.changeTodo(id,done)
+        return 'this is a post request'
 
 if __name__ == "__main__":
     #include values in db
     app.database.addTodo('miriam anrufen')
     app.database.addTodo('weihnachtsgeschenke kaufen')
-
+    app.database.changeTodo(0,True)
     app.run(debug=True, host='0.0.0.0', threaded=True)
