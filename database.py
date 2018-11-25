@@ -1,5 +1,6 @@
 class TodoItem():
-    def __init(self, text):
+    def __init__(self, text, id):
+        self.id=id
         self.text = text
         self.done = False
     def setText(self, text):
@@ -13,13 +14,24 @@ class TodoItem():
 
 class Database():
     def __init__(self):
+        self.todocounter=-1
         self.todos = []
         self.docs = []
-    def addTodo(self, todo):
-        self.todos.append(todo)
+    def addTodo(self, todo_text:str) -> None:
+        self.todocounter+=1
+        self.todos.append(TodoItem(todo_text,
+                                   self.todocounter))
     def addDoc(self, doc):
         self.docs.append(doc)
     def getTodos(self):
-        return self.todos
+        return [dict(id=td.id,
+                     done=td.done,
+                     text=td.text)
+                for td in self.todos]
+    def changeTodo(self, id:int, done:bool) -> None:
+        for td in self.todos:
+            if td.id==id:
+                td.done=done
+                break
     def getDocs(self):
         return self.docs

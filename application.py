@@ -1,6 +1,6 @@
 import logging
 import os
-import * from database
+from database import Database, TodoItem
 
 from random import randint
 from flask import Flask, redirect, url_for, jsonify, request, session, render_template
@@ -23,8 +23,17 @@ def index():
 
 @app.route("/todoList", methods=['GET','POST'])
 def todoList():
-    render_template('todos.html',todos=app.Database.getTodos())
-    pass
+    if request.method=='GET':
+        return render_template('todos.html',todos=app.database.getTodos())
+    elif request.method == 'POST':
+        id=int(request.form['todoid'])
+        done=True if request.form['done']=='true' else False
+        app.database.changeTodo(id,done)
+        return 'this is a post request'
 
 if __name__ == "__main__":
+    #include values in db
+    app.database.addTodo('miriam anrufen')
+    app.database.addTodo('weihnachtsgeschenke kaufen')
+    app.database.changeTodo(0,True)
     app.run(debug=True, host='0.0.0.0', threaded=True)
