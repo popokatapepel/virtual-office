@@ -11,8 +11,34 @@
 // Put variables in global scope to make them available to the browser console.
 const video = document.querySelector('video');
 const canvas = window.canvas = document.querySelector('canvas');
+const buttons = document.querySelector("#target");
 canvas.width = 0;
 canvas.height = 0;
+
+document.querySelector("#sendButton").onclick = function () {
+    var dataURL = canvas.toDataURL('image/png',0.9);
+    $.ajax({
+      type: "POST",
+      url: window.location,
+      data:{
+        imageBase64: dataURL
+      },
+      success: function(result) {
+        window.location.href = "analysisResult.html?id="+result.id.toString();
+      }
+    });
+    buttons.style.visibility = "hidden";
+}
+
+document.querySelector("#retakeButton").onclick = function () {
+  video.width = video.videoWidth;
+  video.height = video.videoHeight;
+  video.style.visibility="visible";
+  canvas.style.visibility="hidden";
+  canvas.width = 0;
+  canvas.height = 0;
+  buttons.style.visibility = "hidden";
+}
 
 video.onclick = function() {
 canvas.style.visibility="visible";
@@ -23,24 +49,8 @@ canvas.style.visibility="visible";
   video.style.visibility="hidden";
     video.width = 0;
 video.height = 0;
-var dataURL = canvas.toDataURL('image/png',0.9);
-$.ajax({
-  type: "POST",
-  url: window.location,
-  data:{
-    imageBase64: dataURL
-  }
-}).then(function(data){
-    console.log(data)
-});
-  setTimeout(function(){
-    video.width = video.videoWidth;
-  video.height = video.videoHeight;
-  video.style.visibility="visible";
-  canvas.style.visibility="hidden";
-  canvas.width = 0;
-canvas.height = 0;
-   }, 3000);
+
+  buttons.style.visibility = "visible";
 };
 
 const constraints = {

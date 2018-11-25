@@ -26,27 +26,40 @@ def index():
         return render_template('index.html')
     elif request.method=='POST':
         image_b64 = request.values['imageBase64']
-        image_data = base64.standard_b64decode(re.sub('^data:image/.+;base64,', '', image_b64))
-        fpath=os.path.join(app.config['UPLOAD_FOLDER'], '{}.png'.format(str(randint(111111, 999999))))
-        with open(fpath, 'wb') as f:
+        image_data=base64.standard_b64decode(re.sub('^data:image/.+;base64,', '', image_b64))
+        #image_data = re.sub('^data:image/.+;base64,', '', image_b64).decode('base64')
+        docId = randint(111111,999999)
+        with open(os.path.join(app.config['UPLOAD_FOLDER'],'{}.png'.format(str(docId))), 'wb') as f:
             f.write(image_data)
-        return 'this is a post request'
+        return jsonify(
+            id=docId
+        )
 
-@app.route('/analysis_result', methods=['GET'])
+@app.route('/analysisResult', methods=['GET'])
 def ana_result():
     fid=request.args.get('id')
     fpath = os.path.join(app.config['UPLOAD_FOLDER'], '{}.png'.format(fid))
     doc2analyse = Doc(fpath)
     doc2analyse.analyse()
     copy(fpath, os.path.join('static', '{}.png'.format(fid)))
+    todotext = doc2analyse.getTodotext()
     return render_template('result.html',
                            fname='{}.png'.format(fid),
                            sender=doc2analyse.sender,
-                           type=doc2analyse.text)
+                           type=doc2analyse.text,
+                           docId = fid,
+                           hasTodo=(todotext!=None),
+                           todo=todotext)
 
-
-
-
+@app.route('/createTodo', methods=['GET'])
+def createTodo():
+    fid = request.args.get('id')
+    fpath = os.path.join(app.config['UPLOAD_FOLDER'], '{}.png'.format(fid))
+    doc2analyse = Doc(fpath)
+    doc2analyse.analyse()
+    todotext = doc2analyse.getTodotext()
+    app.database.addTodo(todotext)
+    return "ok"
 
 @app.route("/todoList", methods=['GET','POST'])
 def todoList():
