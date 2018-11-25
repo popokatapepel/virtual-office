@@ -25,10 +25,13 @@ def index():
         image_b64 = request.values['imageBase64']
         image_data=base64.standard_b64decode(re.sub('^data:image/.+;base64,', '', image_b64))
         #image_data = re.sub('^data:image/.+;base64,', '', image_b64).decode('base64')
-        with open(os.path.join(app.config['UPLOAD_FOLDER'],'{}.png'.format(str(randint(111111,999999)))), 'wb') as f:
+        docId = randint(111111,999999)
+        with open(os.path.join(app.config['UPLOAD_FOLDER'],'{}.png'.format(str(docId))), 'wb') as f:
             f.write(image_data)
 
-        return 'this is a post request'
+        return jsonify(
+            id=docId
+        )
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', threaded=True)
