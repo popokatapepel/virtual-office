@@ -27,7 +27,7 @@ def todoList():
 
 if __name__ == "__main__":
     #include values in db
-    app.database.addTodo(TodoItem('miriam anrufen'))
-    app.database.addTodo(TodoItem('weihnachtsgeschenke kaufen'))
+    app.database.addTodo('miriam anrufen')
+    app.database.addTodo('weihnachtsgeschenke kaufen')
 
     app.run(debug=True, host='0.0.0.0', threaded=True)
