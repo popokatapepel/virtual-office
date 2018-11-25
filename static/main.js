@@ -24,7 +24,7 @@ document.querySelector("#sendButton").onclick = function () {
         imageBase64: dataURL
       },
       success: function(result) {
-        window.location.href = "analysisResult.html?id="+result.id.toString();
+        window.location.href = "analysisResult?id="+result.id.toString();
       }
     });
     buttons.style.visibility = "hidden";
