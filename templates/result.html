@@ -15,24 +15,26 @@ body, html {height: 100%}
     background-size: cover;
 }
 </style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <body>
 
 <div class="bgimg w3-display-container w3-animate-opacity w3-text-white">
   <div class="w3-display-topleft w3-padding-large w3-xlarge">
     Logo
   </div>
-  <div class="w3-display-middle">
-      <video playsinline autoplay></video>
+  <div class="w3-display-left">
+      <img src="{{url_for('static', filename=fname)}}">
   </div>
-  <div class="w3-display-middle">
-      <canvas></canvas>
-  </div>
+    <div class="w3-display-right">
+        <p>
+            {{ sender }}
+            {{ type }}
+        </p>
+    </div>
   <div class="w3-display-bottomleft w3-padding-large">
     Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a>
   </div>
 </div>
-<script src="{{url_for('static', filename='main.js')}}" async></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="{{url_for('static', filename='todo.js')}}" async></script>
 </body>
 </html>

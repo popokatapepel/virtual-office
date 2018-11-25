@@ -18,10 +18,21 @@ video.onclick = function() {
 canvas.style.visibility="visible";
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
+
   canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
   video.style.visibility="hidden";
     video.width = 0;
 video.height = 0;
+var dataURL = canvas.toDataURL('image/png',0.9);
+$.ajax({
+  type: "POST",
+  url: window.location,
+  data:{
+    imageBase64: dataURL
+  }
+}).then(function(data){
+    console.log(data)
+});
   setTimeout(function(){
     video.width = video.videoWidth;
   video.height = video.videoHeight;
@@ -34,13 +45,13 @@ canvas.height = 0;
 
 const constraints = {
   audio: false,
-  video: true
+  video: {width: {min: 640}, height: {min: 480}}
 };
 
 function handleSuccess(stream) {
   window.stream = stream; // make stream available to browser console
   video.srcObject = stream;
-
+    video.height=1024;
 }
 
 function handleError(error) {
