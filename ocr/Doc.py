@@ -17,25 +17,35 @@ class Doc:
         self.sender = None
     def extract(self):
         self.text = pytesseract.image_to_string(Image.open(self.path))
+        return self.text
     def classifyType(self):
-        if self.text != None:
-            if "Entgeltabrechung" in self.text:
-                self.type = DocType.PAYROLL
-            if "RECHNUNG" in self.text:
-                self.type = DocType.BILL
-            if "Meldebescheinigung" in self.text:
-                self.type = DocType.REGISTRATIONCERT
+        if not self.text:
+            self.extract()
+        if "Entgeltabrechung" in self.text:
+            self.type = DocType.PAYROLL
+        if "RECHNUNG" in self.text:
+            self.type = DocType.BILL
+        if "Meldebescheinigung" in self.text:
+            self.type = DocType.REGISTRATIONCERT
+
         return self.type
     def analyzeSender(self):
-        if self.text != None:
-            if "KIT" in self.text:
-                self.sender = "KIT"
-            if "DPD" in self.text:
-                self.sender = "DPD"
-            if "Sozialversicherung" in self.text:
-                self.sender = "Sozialversicherung"
+        if not self.text:
+            self.extract()
+        if "KIT" in self.text:
+            self.sender = "KIT"
+        if "DPD" in self.text:
+            self.sender = "DPD"
+        if "Sozialversicherung" in self.text:
+            self.sender = "Sozialversicherung"
         return self.sender
+
     def getTodotext(self):
+        if not self.type:
+            self.classifyType()
+        if not self.sender:
+            self.analyzeSender()
+
         if self.type == DocType.BILL or self.sender == "DPD":
             pattern = re.compile('[0-9]{2}( [0-9]{5}){5}')
             match = pattern.search(self.text)
