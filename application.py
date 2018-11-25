@@ -10,13 +10,16 @@ from shutil import copy
 from random import randint
 
 from PIL import Image
-from flask import Flask, redirect, url_for, jsonify, request, session, render_template
+from flask import Flask, flash, redirect, url_for, jsonify, request, session, render_template
 from json import dumps
+from werkzeug.utils import secure_filename
 
 logging.basicConfig(level=logging.DEBUG)
 
 app=Flask(__name__)
 app.config['UPLOAD_FOLDER']='vault'
+ALLOWED_EXTENSIONS = set(['png'])
+
 app.database = Database()
 app.secret='SECRET'
 
@@ -44,8 +47,25 @@ def ana_result():
                            sender=doc2analyse.sender,
                            type=doc2analyse.text)
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+@app.route('/upload', methods=['GET','POST'])
+def upload():
+    if request.method == 'GET':
+        return render_template('upload.html')
+    elif request.method == 'POST':
+        file= request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            fid=str(randint(111111, 999999))
+            filename = '{}.png'.format(fid)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('ana_result', **dict(id=fid)))
 
 
 @app.route("/todoList", methods=['GET','POST'])
