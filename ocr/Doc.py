@@ -56,3 +56,7 @@ class Doc:
                 return "Bezahle Rechnung " + match.group(0)
         if self.type == DocType.REGISTRATIONCERT or self.sender == "Sozialversicherung":
             return "Steuererklärung einreichen"
+
+    def analyse(self):
+        self.getTodotext()
+        self.analyzeSender()
