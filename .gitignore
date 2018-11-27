@@ -105,3 +105,6 @@ venv.bak/
 
 #pycharm
 .idea/
+
+#vault is the current upload path and should not be tracked
+vault/
