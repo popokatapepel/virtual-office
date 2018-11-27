@@ -6,8 +6,8 @@
 <body>
  <div class="w3-bar w3-green">
   <a href="#" class="w3-bar-item w3-button">Take Photo</a>
-  <a href="#" class="w3-bar-item w3-button">Upload File</a>
-  <a href="#" class="w3-bar-item w3-button">Task list</a>
+  <a href="#" class="w3-bar-item w3-button" onclick="hide_paris()">Upload File</a>
+  <a href="#" class="w3-bar-item w3-button" onclick="show_paris()">Task list</a>
 </div> 
 <div class="w3-container w3-green">
   <h1>W3Schools Demo</h1> 
@@ -20,7 +20,7 @@
     <p>loading...</p>
   </div>
 
-  <div class="w3-third w3-green">
+  <div class="w3-third w3-green" id="paris">
     <h2>Paris</h2>
     <p>Paris is the capital of France.</p> 
     <p>The Paris area is one of the largest population centers in Europe,

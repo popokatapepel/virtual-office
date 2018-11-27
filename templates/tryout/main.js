@@ -6,3 +6,13 @@ var str="<h2>London</h2><p>London is the capital city of England.</p><p>It is th
 london_div=document.getElementById("london");
 london_div.innerHTML=str;
 }
+
+function hide_paris(){
+    paris_div=document.getElementById("paris");
+    paris_div.style.display="none";  
+}
+
+function show_paris(){
+    paris_div=document.getElementById("paris");
+    paris_div.style.display="initial";
+}
