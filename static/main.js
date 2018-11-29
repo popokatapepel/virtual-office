@@ -17,6 +17,7 @@ canvas.height = 0;
 
 document.querySelector("#sendButton").onclick = function () {
     var dataURL = canvas.toDataURL('image/png',0.9);
+    var id;
     $.ajax({
       type: "POST",
       url: window.location,
@@ -24,7 +25,23 @@ document.querySelector("#sendButton").onclick = function () {
         imageBase64: dataURL
       },
       success: function(result) {
-        window.location.href = "analysisResult?id="+result.id.toString();
+       $.ajax({
+      type: "GET",
+      url: "http://localhost:5000/analysisResult?id="+result.id.toString(),
+      success: function(result) {
+        console.log("xxxxxxxxxxxxxxxxxxxx")
+        document.getElementById("content").innerHTML=result;
+      }
+    });
+
+      }
+    });
+    $.ajax({
+      type: "GET",
+      url: "http://localhost:5000/analysisResult?id="+id,
+      success: function(result) {
+        console.log("xxxxxxxxxxxxxxxxxxxx")
+        document.getElementById("content").innerHTML=result;
       }
     });
     buttons.style.visibility = "hidden";
@@ -61,7 +78,7 @@ const constraints = {
 function handleSuccess(stream) {
   window.stream = stream; // make stream available to browser console
   video.srcObject = stream;
-    video.height=1024;
+    //video.height=1024;
 }
 
 function handleError(error) {

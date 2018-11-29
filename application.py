@@ -38,6 +38,11 @@ def index():
             id=docId
         )
 
+@app.route("/photo", methods=['GET'])
+def photo():
+    if request.method=='GET':
+        return render_template('photo.html')
+
 @app.route('/analysisResult', methods=['GET'])
 def ana_result():
     fid=request.args.get('id')
@@ -93,6 +98,10 @@ def todoList():
         done=True if request.form['done']=='true' else False
         app.database.changeTodo(id,done)
         return 'this is a post request'
+
+@app.route("/js/<jsname>", methods=['GET'])
+def render_js(jsname):
+    return render_template(jsname)
 
 if __name__ == "__main__":
     #include values in db
