@@ -13,7 +13,7 @@ function handleCBchange(cb, id) {
 
     $.ajax({
         type: "POST",
-        url: window.location,
+        url: "http://localhost:5000/todoList",
         data:{
             todoid: id,
             done: cb.checked

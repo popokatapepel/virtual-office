@@ -93,4 +93,5 @@ function handleError(error) {
     console.log('navigator.getUserMedia error: ', error);
 }
 
+
 navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess).catch(handleError);
