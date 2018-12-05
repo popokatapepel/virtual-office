@@ -1,18 +1,15 @@
 import logging
 import os
+from os.path import join
 from database import Database, TodoItem
 import re
 import base64
-from random import randint
 from ocr.Doc import Doc
 from shutil import copy
 
 from random import randint
 
-from PIL import Image
 from flask import Flask, flash, redirect, url_for, jsonify, request, session, render_template
-from json import dumps
-from werkzeug.utils import secure_filename
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -26,7 +23,7 @@ app.secret='SECRET'
 @app.route("/", methods=['GET','POST'])
 def index():
     if request.method=='GET':
-        return render_template('index.html')
+        return render_template(join('html', 'index.html'))
     elif request.method=='POST':
         image_b64 = request.values['imageBase64']
         image_data=base64.standard_b64decode(re.sub('^data:image/.+;base64,', '', image_b64))
@@ -41,7 +38,7 @@ def index():
 @app.route("/photo", methods=['GET'])
 def photo():
     if request.method=='GET':
-        return render_template('photo.html')
+        return render_template(join('html','photo.html'))
 
 @app.route('/analysisResult', methods=['GET'])
 def ana_result():
@@ -51,7 +48,7 @@ def ana_result():
     doc2analyse.analyse()
     copy(fpath, os.path.join('static', '{}.png'.format(fid)))
     todotext = doc2analyse.getTodotext()
-    return render_template('result.html',
+    return render_template(join('html','result.html'),
                            fname='{}.png'.format(fid),
                            sender=doc2analyse.sender,
                            type=doc2analyse.text,
@@ -67,7 +64,7 @@ def allowed_file(filename):
 @app.route('/upload', methods=['GET','POST'])
 def upload():
     if request.method == 'GET':
-        return render_template('upload.html')
+        return render_template(join('html','upload.html'))
     elif request.method == 'POST':
         file= request.files['file']
         if file.filename == '':
@@ -92,7 +89,7 @@ def createTodo():
 @app.route("/todoList", methods=['GET','POST'])
 def todoList():
     if request.method=='GET':
-        return render_template('todos.html',todos=app.database.getTodos())
+        return render_template(join('html','todos.html'),todos=app.database.getTodos())
     elif request.method == 'POST':
         id=int(request.form['todoid'])
         done=True if request.form['done']=='true' else False
@@ -101,7 +98,7 @@ def todoList():
 
 @app.route("/js/<jsname>", methods=['GET'])
 def render_js(jsname):
-    return render_template(jsname)
+    return render_template(join('js',jsname))
 
 if __name__ == "__main__":
     #include values in db
