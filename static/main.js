@@ -12,6 +12,7 @@
 const video = document.querySelector('video');
 const canvas = window.canvas = document.querySelector('canvas');
 const buttons = document.querySelector("#target");
+buttons.style.display="None"
 canvas.width = 0;
 canvas.height = 0;
 
@@ -50,24 +51,25 @@ document.querySelector("#sendButton").onclick = function () {
 document.querySelector("#retakeButton").onclick = function () {
   video.width = video.videoWidth;
   video.height = video.videoHeight;
-  video.style.visibility="visible";
-  canvas.style.visibility="hidden";
+  video.style.display="";
+  canvas.style.display="None";
   canvas.width = 0;
   canvas.height = 0;
-  buttons.style.visibility = "hidden";
+  buttons.style.display = "None";
 }
 
 video.onclick = function() {
-canvas.style.visibility="visible";
+console.log(canvas.style);
+canvas.style.display="";
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
 
   canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-  video.style.visibility="hidden";
+  video.style.display="None";
     video.width = 0;
 video.height = 0;
-
-  buttons.style.visibility = "visible";
+    console.log(canvas.style);
+  buttons.style.display = "";
 };
 
 const constraints = {
