@@ -30,6 +30,16 @@ function load_todo_screen(){
     });
 }
 
+function load_upload_screen(){
+    $.ajax({
+      type: "GET",
+      url: "{{url_for('upload')}}",
+      success: function(result) {
+        document.getElementById("content").innerHTML=result;
+      }
+    });
+}
+
 
 
 
