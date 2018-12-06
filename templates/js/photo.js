@@ -27,7 +27,10 @@ document.querySelector("#sendButton").onclick = function() {
         success: function(result) {
             $.ajax({
                 type: "GET",
-                url: "http://localhost:5000/analysisResult?id=" + result.id.toString(),
+                url: "{{url_for('ana_result')}}",
+                data: {
+                    id: id
+                },
                 success: function(result) {
                     console.log("xxxxxxxxxxxxxxxxxxxx")
                     document.getElementById("content").innerHTML = result;
@@ -38,7 +41,10 @@ document.querySelector("#sendButton").onclick = function() {
     });
     $.ajax({
         type: "GET",
-        url: "http://localhost:5000/analysisResult?id=" + id,
+        url: "{{url_for('ana_result')}}",
+        data: {
+            id: id
+        },
         success: function(result) {
             console.log("xxxxxxxxxxxxxxxxxxxx")
             document.getElementById("content").innerHTML = result;

@@ -6,7 +6,7 @@ function load_photo_screen(){
         document.getElementById("content").innerHTML=result;
       }
     });
-    $.getScript( "{{url_for('static', filename='main.js')}}",
+    $.getScript( "{{url_for('render_js', jsname='photo.js')}}",
     function( data, textStatus, jqxhr ) {
       console.log( textStatus ); // Success
       console.log( jqxhr.status ); // 200
@@ -22,7 +22,7 @@ function load_todo_screen(){
         document.getElementById("content").innerHTML=result;
       }
     });
-    $.getScript( "{{url_for('static', filename='todo.js')}}",
+    $.getScript( "{{url_for('render_js', jsname='todos.js')}}",
     function( data, textStatus, jqxhr ) {
       console.log( textStatus ); // Success
       console.log( jqxhr.status ); // 200
